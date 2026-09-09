@@ -2,10 +2,18 @@ import { useState, useEffect } from "react";
 
 // Barra de progresso de doações
 // Passa "atual" e "meta" como props (em euros, ou qualquer moeda)
-function BarraDoacoes({ atual = 3200, meta = 10000, moeda = "€" }) {
-  const [largura, setLargura] = useState(0);
+function BarraDoacoes({meta = 10000, moeda = "€" }) {
+  const URL = import.meta.env.VITE_SCRIPT_URL;
 
+  const [atual, setAtual] = useState("");
+  const [largura, setLargura] = useState(0);
   const percentagem = Math.min((atual / meta) * 100, 100);
+
+  useEffect(() => {
+    fetch(URL)
+      .then((res) => res.json())
+      .then((data) => setAtual(data.total));
+  }, []);
 
   useEffect(() => {
     // pequeno atraso para a barra "encher" com animação ao carregar
