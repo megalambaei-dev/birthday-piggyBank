@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 function FormularioDoacoes({ onSubmit }) {
+  const URL = import.meta.env.VITE_SCRIPT_URL;
   // valor a ver se por cima da barra
   const [valor, setValor] = useState(5);
   const regexTelemovel = /^(?:\+351|00351)?9[1236]\d{7}$/;
@@ -22,6 +23,25 @@ function FormularioDoacoes({ onSubmit }) {
 
     if (telemovel && !regexTelemovel.test(telemovel)) {
       alert("Número de telemóvel inválido");
+      form.telemovel.value = "";
+      return;
+    }
+
+    // Verificar se o email já doou
+    try {
+      const resposta = await fetch(
+        `${URL}?acao=verificarDoador&email=${encodeURIComponent(email)}&telemovel=${encodeURIComponent(telemovel)}`,
+      );
+
+      const resultado = await resposta.json();
+     
+      if (resultado.emailExiste || resultado.telemovelExiste) {
+        alert("Este email já efetuou uma doação anteriormente.");
+        return;
+      }
+    } catch (err) {
+      console.error("Erro ao verificar email:", err);
+      alert("Não foi possível verificar o email. Tenta novamente.");
       return;
     }
 
@@ -64,9 +84,6 @@ function FormularioDoacoes({ onSubmit }) {
           id="telemovel"
           type="tel"
           placeholder=" +351 xxx xxx xxx"
-          //onBlur={handleBlur}
-          //value={numero}
-          //onChange={handleChange}
           required
         ></input>
 
@@ -88,12 +105,12 @@ function FormularioDoacoes({ onSubmit }) {
   );
 }
 
-async function enviarDoacao(nome, email, valor) {
+async function enviarDoacao(nome, email, telemovel, valor) {
   const URL = import.meta.env.VITE_SCRIPT_URL;
-  console.log(import.meta.env.VITE_SCRIPT_URL);
+  console.log(nome, email, telemovel, valor);
   await fetch(URL, {
     method: "POST",
-    body: JSON.stringify({ nome, email, valor }),
+    body: JSON.stringify({ nome, email, telemovel, valor }),
     headers: { "Content-Type": "text/plain" },
   });
 }
