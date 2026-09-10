@@ -1,10 +1,5 @@
 import { createRoot } from 'react-dom/client'
-import BarraDoacoes from './components/progress-bar'
-import FormularioDoacoes from './components/donation-form'
+import App from './App'
+import React from 'react'
 
-createRoot(document.getElementById('app')!).render(
-  <div>
-    <BarraDoacoes atual={3200} meta={10000} moeda="€" />
-    <FormularioDoacoes /> 
-  </div>
-)
+createRoot(document.getElementById('app')!).render(<App />)

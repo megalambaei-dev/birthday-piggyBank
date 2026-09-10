@@ -1,7 +1,9 @@
 import { useState } from "react";
 
-function FormularioDoacoes() {
+function FormularioDoacoes({ onSubmit }) {
+  // valor a ver se por cima da barra
   const [valor, setValor] = useState(5);
+  
   async function handleSubmit(e) {
     e.preventDefault();
 
@@ -21,7 +23,8 @@ function FormularioDoacoes() {
     try {
       await enviarDoacao(nome, email, valor);
       alert("Obrigada pelo teu contributo! <3");
-
+      //vai chamar a funcao passada.
+      onSubmit(valor);
       // carrega outro elemento? e tapa o form?
     } catch (error) {
       console.error(error);
