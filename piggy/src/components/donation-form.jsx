@@ -3,7 +3,8 @@ import { useState } from "react";
 function FormularioDoacoes({ onSubmit }) {
   // valor a ver se por cima da barra
   const [valor, setValor] = useState(5);
-  
+  const regexTelemovel = /^(?:\+351|00351)?9[1236]\d{7}$/;
+
   async function handleSubmit(e) {
     e.preventDefault();
 
@@ -12,16 +13,20 @@ function FormularioDoacoes({ onSubmit }) {
     const nome = form.nome.value;
     const email = form.email.value;
     const emailV = form.emailV.value;
-
-    //const telemovel = telemovel.value;
+    const telemovel = form.telemovel.value;
 
     if (email !== emailV) {
       alert("Os emails não coincidem.");
       return;
     }
 
+    if (telemovel && !regexTelemovel.test(telemovel)) {
+      alert("Número de telemóvel inválido");
+      return;
+    }
+
     try {
-      await enviarDoacao(nome, email, valor);
+      await enviarDoacao(nome, email, telemovel, valor);
       alert("Obrigada pelo teu contributo! <3");
       //vai chamar a funcao passada.
       onSubmit(valor);
@@ -54,6 +59,17 @@ function FormularioDoacoes({ onSubmit }) {
           placeholder="Exemplo: xxx@gmail.com"
           required
         ></input>
+        <label>Email</label>
+        <input
+          id="telemovel"
+          type="tel"
+          placeholder=" +351 xxx xxx xxx"
+          //onBlur={handleBlur}
+          //value={numero}
+          //onChange={handleChange}
+          required
+        ></input>
+
         <label htmlFor="doacao">Valor a doar </label>
         <input
           type="range"
