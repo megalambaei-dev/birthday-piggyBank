@@ -1,13 +1,17 @@
 import { useState } from "react";
 
+const URL = import.meta.env.VITE_SCRIPT_URL;
+
 function FormularioDoacoes({ onSubmit }) {
-  const URL = import.meta.env.VITE_SCRIPT_URL;
   // valor a ver se por cima da barra
   const [valor, setValor] = useState(5);
+  const [aCarregar, setACarregar] = useState(false);
   const regexTelemovel = /^(?:\+351|00351)?9[1236]\d{7}$/;
 
   async function handleSubmit(e) {
     e.preventDefault();
+
+    setACarregar(true);
 
     const form = e.target;
 
@@ -18,12 +22,14 @@ function FormularioDoacoes({ onSubmit }) {
 
     if (email !== emailV) {
       alert("Os emails não coincidem.");
+      setACarregar(false);
       return;
     }
 
     if (telemovel && !regexTelemovel.test(telemovel)) {
       alert("Número de telemóvel inválido");
       form.telemovel.value = "";
+      setACarregar(false);
       return;
     }
 
@@ -32,28 +38,30 @@ function FormularioDoacoes({ onSubmit }) {
       const resposta = await fetch(
         `${URL}?acao=verificarDoador&email=${encodeURIComponent(email)}&telemovel=${encodeURIComponent(telemovel)}`,
       );
-
       const resultado = await resposta.json();
-     
-      if (resultado.emailExiste || resultado.telemovelExiste) {
+
+      if (resultado.emailExiste) {
         alert("Este email já efetuou uma doação anteriormente.");
+        setACarregar(false);
         return;
       }
-    } catch (err) {
-      console.error("Erro ao verificar email:", err);
-      alert("Não foi possível verificar o email. Tenta novamente.");
-      return;
-    }
 
-    try {
+      if (resultado.telemovelExiste) {
+        alert("Este número de telemóvel já foi usado numa doação anterior.");
+        form.telemovel.value = "";
+        form.telemovel.focus();
+        setACarregar(false);
+        return;
+      }
+
       await enviarDoacao(nome, email, telemovel, valor);
       alert("Obrigada pelo teu contributo! <3");
-      //vai chamar a funcao passada.
       onSubmit(valor);
-      // carrega outro elemento? e tapa o form?
     } catch (error) {
       console.error(error);
       alert("Erro ao enviar a doação.");
+    } finally {
+      setACarregar(false); 
     }
   }
 
@@ -99,15 +107,15 @@ function FormularioDoacoes({ onSubmit }) {
           onChange={(e) => setValor(e.target.value)}
         />
         <label>{valor}</label>
-        <button type="submit">Doar</button>
+        <button type="submit" disabled={aCarregar}>
+          {aCarregar ? "A processar..." : "Doar"}
+        </button>
       </form>
     </>
   );
 }
 
 async function enviarDoacao(nome, email, telemovel, valor) {
-  const URL = import.meta.env.VITE_SCRIPT_URL;
-  console.log(nome, email, telemovel, valor);
   await fetch(URL, {
     method: "POST",
     body: JSON.stringify({ nome, email, telemovel, valor }),
