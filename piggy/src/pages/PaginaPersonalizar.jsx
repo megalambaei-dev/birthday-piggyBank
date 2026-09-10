@@ -3,9 +3,10 @@ import { useSearchParams } from "react-router-dom";
 
 const URL = import.meta.env.VITE_SCRIPT_URL;
 
-// área reservada na t-shirt (ajusta às coordenadas do teu mockup)
-const AREA = { x: 150, y: 120, largura: 150, altura: 180 };
-const TAMANHO_IMAGEM = 100; // tamanho fixo da imagem do utilizador
+// área reservada, agora em percentagem do container (0 a 100)
+// x e y quando comeca a area e altura e largura ocupados do container
+const AREA = { x: 37.5, y: 26.7, largura: 37.5, altura: 40 }; // 150/400=37.5%, 120/450≈26.7%, etc.
+const TAMANHO_IMAGEM_PERC = 25; // 25% da largura do container
 
 function PaginaPersonalizar() {
   const [searchParams] = useSearchParams();
@@ -14,28 +15,28 @@ function PaginaPersonalizar() {
   const [estado, setEstado] = useState("a-verificar"); // a-verificar | valido | invalido
   const [nome, setNome] = useState("");
   const [imagem, setImagem] = useState(null);
-  const [pos, setPos] = useState({ x: AREA.x + 25, y: AREA.y + 40 });
+  const [pos, setPos] = useState({ x: AREA.x + 6, y: AREA.y + 10 });
   const [aArrastar, setAArrastar] = useState(false);
   const [aGuardar, setAGuardar] = useState(false);
   const canvasRef = useRef(null);
 
-  useEffect(() => {
-    if (!token) {
-      setEstado("invalido");
-      return;
-    }
-    fetch(`${URL}?acao=verificarToken&token=${encodeURIComponent(token)}`)
-      .then((r) => r.json())
-      .then((res) => {
-        if (res.valido) {
-          setNome(res.nome);
-          setEstado("valido");
-        } else {
-          setEstado("invalido");
-        }
-      })
-      .catch(() => setEstado("invalido"));
-  }, [token]);
+  //   useEffect(() => {
+  //     if (!token) {
+  //       setEstado("invalido");
+  //       return;
+  //     }
+  //     fetch(`${URL}?acao=verificarToken&token=${encodeURIComponent(token)}`)
+  //       .then((r) => r.json())
+  //       .then((res) => {
+  //         if (res.valido) {
+  //           setNome(res.nome);
+  //           setEstado("valido");
+  //         } else {
+  //           setEstado("invalido");
+  //         }
+  //       })
+  //       .catch(() => setEstado("invalido"));
+  //   }, [token]);
 
   function handleUpload(e) {
     const ficheiro = e.target.files[0];
@@ -52,16 +53,22 @@ function PaginaPersonalizar() {
   function handlePointerMove(e) {
     if (!aArrastar) return;
     const container = e.currentTarget.getBoundingClientRect();
+
+    // posição do rato em % relativo ao container (não em pixels fixos)
+    const xPerc = ((e.clientX - container.left) / container.width) * 100;
+    const yPerc = ((e.clientY - container.top) / container.height) * 100;
+
     const x = clamp(
-      e.clientX - container.left - TAMANHO_IMAGEM / 2,
+      xPerc - TAMANHO_IMAGEM_PERC / 2,
       AREA.x,
-      AREA.x + AREA.largura - TAMANHO_IMAGEM,
+      AREA.x + AREA.largura - TAMANHO_IMAGEM_PERC,
     );
     const y = clamp(
-      e.clientY - container.top - TAMANHO_IMAGEM / 2,
+      yPerc - TAMANHO_IMAGEM_PERC / 2,
       AREA.y,
-      AREA.y + AREA.altura - TAMANHO_IMAGEM,
+      AREA.y + AREA.altura - TAMANHO_IMAGEM_PERC,
     );
+
     setPos({ x, y });
   }
 
@@ -71,7 +78,7 @@ function PaginaPersonalizar() {
     const ctx = canvas.getContext("2d");
 
     const shirt = new Image();
-    shirt.src = "/tshirt-mockup.png"; // coloca este ficheiro em /public
+    shirt.src = "/tshirt-mockup.png"; // ficheiro em /public
     await new Promise((res) => (shirt.onload = res));
     ctx.drawImage(shirt, 0, 0, canvas.width, canvas.height);
 
@@ -79,7 +86,13 @@ function PaginaPersonalizar() {
       const userImg = new Image();
       userImg.src = imagem;
       await new Promise((res) => (userImg.onload = res));
-      ctx.drawImage(userImg, pos.x, pos.y, TAMANHO_IMAGEM, TAMANHO_IMAGEM);
+      ctx.drawImage(
+        userImg,
+        (pos.x / 100) * canvas.width,
+        (pos.y / 100) * canvas.height,
+        (TAMANHO_IMAGEM_PERC / 100) * canvas.width,
+        (TAMANHO_IMAGEM_PERC / 100) * canvas.width, // usa a largura para manter proporção quadrada
+      );
     }
 
     const dataUrl = canvas.toDataURL("image/png");
@@ -104,39 +117,42 @@ function PaginaPersonalizar() {
     }
   }
 
-  if (estado === "a-verificar") return <p>A verificar o teu link...</p>;
-  if (estado === "invalido")
-    return <p>Este link é inválido ou já foi utilizado.</p>;
-  if (estado === "concluido")
-    return <p>O teu design foi guardado. Obrigado, {nome}! 🎉</p>;
+  //   if (estado === "a-verificar") return <p>A verificar o teu link...</p>;
+  //   if (estado === "invalido")
+  //     return <p>Este link é inválido ou já foi utilizado.</p>;
+  //   if (estado === "concluido")
+  //     return <p>O teu design foi guardado. Obrigado, {nome}! 🎉</p>;
 
   return (
     <div>
       <h2>Personaliza a tua t-shirt, {nome}!</h2>
       <input type="file" accept="image/*" onChange={handleUpload} />
-
+      {/* div da imagem */}
       <div
         onPointerMove={handlePointerMove}
         onPointerUp={() => setAArrastar(false)}
         style={{
           position: "relative",
-          width: 400,
-          height: 450,
+          width: "100%",
+          maxWidth: "400px", // não cresce infinitamente em ecrãs grandes
+          aspectRatio: "400 / 450", // mantém a proporção da tua imagem original
           backgroundImage: "url(/tshirt-mockup.png)",
           backgroundSize: "cover",
+          margin: "0 auto", // centra na página
         }}
       >
-        {/* área reservada, visível como referência */}
+        {/* área reservada visível */}
         <div
           style={{
             position: "absolute",
-            left: AREA.x,
-            top: AREA.y,
-            width: AREA.largura,
-            height: AREA.altura,
+            left: `${AREA.x}%`,
+            top: `${AREA.y}%`,
+            width: `${AREA.largura}%`,
+            height: `${AREA.altura}%`,
             border: "2px dashed rgba(255,255,255,0.6)",
           }}
         />
+
         {imagem && (
           <img
             src={imagem}
@@ -144,17 +160,15 @@ function PaginaPersonalizar() {
             draggable={false}
             style={{
               position: "absolute",
-              left: pos.x,
-              top: pos.y,
-              width: TAMANHO_IMAGEM,
-              height: TAMANHO_IMAGEM,
+              left: `${pos.x}%`,
+              top: `${pos.y}%`,
+              width: `${TAMANHO_IMAGEM_PERC}%`,
               cursor: "grab",
               touchAction: "none",
             }}
           />
         )}
       </div>
-
       <canvas
         ref={canvasRef}
         width={400}
