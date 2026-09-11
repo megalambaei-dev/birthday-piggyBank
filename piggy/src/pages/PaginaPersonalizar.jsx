@@ -1,11 +1,12 @@
 import { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
+import "./PaginaPersonalizar.css";
 
 const URL = import.meta.env.VITE_SCRIPT_URL;
 
 // área reservada, agora em percentagem do container (0 a 100)
 // x e y quando comeca a area e altura e largura ocupados do container
-const AREA = { x: 37.5, y: 26.7, largura: 37.5, altura: 40 }; // 150/400=37.5%, 120/450≈26.7%, etc.
+const AREA = { x: 31, y: 20.7, largura: 37.5, altura: 40 }; // 150/400=37.5%, 120/450≈26.7%, etc.
 const TAMANHO_IMAGEM_PERC = 25; // 25% da largura do container
 
 function PaginaPersonalizar() {
@@ -15,6 +16,7 @@ function PaginaPersonalizar() {
   const [estado, setEstado] = useState("a-verificar"); // a-verificar | valido | invalido
   const [nome, setNome] = useState("");
   const [imagem, setImagem] = useState(null);
+  const [face, setFace] = useState("frente");
   const [pos, setPos] = useState({ x: AREA.x + 6, y: AREA.y + 10 });
   const [aArrastar, setAArrastar] = useState(false);
   const [aGuardar, setAGuardar] = useState(false);
@@ -78,7 +80,7 @@ function PaginaPersonalizar() {
     const ctx = canvas.getContext("2d");
 
     const shirt = new Image();
-    shirt.src = "/tshirt-mockup.png"; // ficheiro em /public
+    shirt.src = "/frente.png"; // ficheiro em /public
     await new Promise((res) => (shirt.onload = res));
     ctx.drawImage(shirt, 0, 0, canvas.width, canvas.height);
 
@@ -90,8 +92,9 @@ function PaginaPersonalizar() {
         userImg,
         (pos.x / 100) * canvas.width,
         (pos.y / 100) * canvas.height,
+        // usa a largura para manter proporção quadrada
         (TAMANHO_IMAGEM_PERC / 100) * canvas.width,
-        (TAMANHO_IMAGEM_PERC / 100) * canvas.width, // usa a largura para manter proporção quadrada
+        (TAMANHO_IMAGEM_PERC / 100) * canvas.width, 
       );
     }
 
@@ -125,31 +128,26 @@ function PaginaPersonalizar() {
 
   return (
     <div>
-      <h2>Personaliza a tua t-shirt, {nome}!</h2>
+      <h2>Personaliza a t-shirt!</h2>
       <input type="file" accept="image/*" onChange={handleUpload} />
       {/* div da imagem */}
       <div
         onPointerMove={handlePointerMove}
         onPointerUp={() => setAArrastar(false)}
+        className="containerImagem"
         style={{
-          position: "relative",
-          width: "100%",
-          maxWidth: "400px", // não cresce infinitamente em ecrãs grandes
-          aspectRatio: "400 / 450", // mantém a proporção da tua imagem original
-          backgroundImage: "url(/tshirt-mockup.png)",
-          backgroundSize: "cover",
-          margin: "0 auto", // centra na página
+          backgroundImage:
+            face === "frente" ? "url(/frente.png)" : "url(/costas.png)",
         }}
       >
         {/* área reservada visível */}
-        <div
+        <div className="picotado"
           style={{
-            position: "absolute",
-            left: `${AREA.x}%`,
+            left: face === "frente" ? `${AREA.x}%` : `${AREA.x - 1}%`,
             top: `${AREA.y}%`,
             width: `${AREA.largura}%`,
             height: `${AREA.altura}%`,
-            border: "2px dashed rgba(255,255,255,0.6)",
+            
           }}
         />
 
@@ -159,12 +157,9 @@ function PaginaPersonalizar() {
             onPointerDown={() => setAArrastar(true)}
             draggable={false}
             style={{
-              position: "absolute",
               left: `${pos.x}%`,
               top: `${pos.y}%`,
               width: `${TAMANHO_IMAGEM_PERC}%`,
-              cursor: "grab",
-              touchAction: "none",
             }}
           />
         )}
@@ -173,8 +168,10 @@ function PaginaPersonalizar() {
         ref={canvasRef}
         width={400}
         height={450}
-        style={{ display: "none" }}
       />
+
+      <button onClick={() => setFace("frente")}>frente</button>
+      <button onClick={() => setFace("costas")}>costedo</button>
 
       <button onClick={handleGuardar} disabled={aGuardar || !imagem}>
         {aGuardar ? "A guardar..." : "Guardar design"}

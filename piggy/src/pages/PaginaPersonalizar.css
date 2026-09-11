@@ -1,0 +1,369 @@
+/* ========================================
+   CONTAINER DA T-SHIRT
+   ======================================== */
+
+.containerImagem {
+  position: relative;
+  width: 150px;
+  aspect-ratio: 1586 / 1730;
+
+  box-shadow:
+    inset 0 0 20px rgba(180, 100, 255, 0.15),
+    5px 5px 0 #c77dff;
+  background-size: 100%;
+  border: 1px solid red;
+  background-repeat: no-repeat;
+  margin: 0 auto;
+  border: 3px solid #ffffff;
+  border-radius: 15px;
+
+  background-color: #f4e9ff;
+  overflow: hidden;
+}
+
+.picotado {
+  position: relative;
+  margin: auto 0%;
+  border: 2px dashed rgba(255, 255, 255, 0.6);
+}
+
+img {
+  position: "absolute";
+  cursor: "grab";
+  touch-action: "none";
+}
+
+canvas {
+  display: none;
+}
+
+@media (min-width: 400px) {
+  .containerImagem {
+    display: block;
+    position: relative;
+    margin: auto 0%;
+    width: 50%;
+    max-width: 100%;
+    aspect-ratio: 1586 / 1730;
+
+    border: 1px solid green;
+  }
+}
+
+/* ========================================
+   Y2K / RETRO
+   ======================================== */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Trebuchet MS", Arial, sans-serif;
+}
+
+/* ========================================
+   FUNDO
+   ======================================== */
+
+.paginaPersonalizar {
+  min-height: 100vh;
+
+  padding: 40px 20px;
+
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+
+  background:
+    radial-gradient(circle at 20% 20%, #ffffff 0 2px, transparent 3px),
+    radial-gradient(circle at 80% 30%, #ffffff 0 2px, transparent 3px),
+    radial-gradient(circle at 30% 80%, #ffffff 0 2px, transparent 3px),
+    linear-gradient(135deg, #ffb6e6 0%, #d8b4ff 45%, #9fdcff 100%);
+
+  background-size:
+    80px 80px,
+    120px 120px,
+    100px 100px,
+    100% 100%;
+
+  overflow-x: hidden;
+}
+
+/* ========================================
+   CARTÃO PRINCIPAL
+   ======================================== */
+
+.cartaoRetro {
+  width: 100%;
+  max-width: 650px;
+
+  padding: 35px 30px 30px;
+
+  text-align: center;
+
+  background: rgba(255, 255, 255, 0.92);
+
+  border: 3px solid #ffffff;
+  border-radius: 25px;
+
+  box-shadow:
+    8px 8px 0 #b05cff,
+    0 0 25px rgba(255, 255, 255, 0.8);
+
+  position: relative;
+}
+
+/* ========================================
+   TÍTULO
+   ======================================== */
+
+.cartaoRetro h1 {
+  margin: 0;
+
+  color: #d52ca8;
+
+  font-size: clamp(28px, 6vw, 44px);
+
+  font-weight: 900;
+
+  text-shadow:
+    2px 2px 0 #ffffff,
+    4px 4px 0 #f5a6ff;
+
+  letter-spacing: -1px;
+}
+
+.subtitulo {
+  margin: 10px 0 30px;
+
+  color: #7040a5;
+
+  font-size: 15px;
+  font-weight: bold;
+
+  letter-spacing: 1px;
+}
+
+/* ========================================
+   UPLOAD
+   ======================================== */
+
+.uploadArea {
+  margin-bottom: 20px;
+}
+
+.uploadArea input[type="file"] {
+  display: none;
+}
+
+.uploadButton {
+  display: inline-block;
+
+  padding: 12px 22px;
+
+  background: linear-gradient(#ffffff, #ffd7f4);
+
+  color: #a51b83;
+
+  border: 2px solid #d52ca8;
+  border-radius: 12px;
+
+  box-shadow: 3px 3px 0 #d52ca8;
+
+  font-weight: bold;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.1s,
+    box-shadow 0.1s;
+}
+
+.uploadButton:hover {
+  transform: translate(2px, 2px);
+
+  box-shadow: 1px 1px 0 #d52ca8;
+}
+
+/* ========================================
+   BOTÕES FRENTE / COSTAS
+   ======================================== */
+
+.faceButtons {
+  display: flex;
+
+  justify-content: center;
+
+  gap: 12px;
+
+  margin-bottom: 25px;
+}
+
+.faceButton {
+  padding: 10px 20px;
+
+  border: 2px solid #8b48c7;
+  border-radius: 20px;
+
+  background: #eee0ff;
+
+  color: #7135a5;
+
+  font-family: inherit;
+  font-weight: bold;
+
+  cursor: pointer;
+
+  box-shadow: 3px 3px 0 #8b48c7;
+
+  transition:
+    transform 0.1s,
+    box-shadow 0.1s;
+}
+
+.faceButton:hover {
+  transform: translate(2px, 2px);
+
+  box-shadow: 1px 1px 0 #8b48c7;
+}
+
+.faceButton.active {
+  background: linear-gradient(135deg, #ff76d2, #c77dff);
+
+  color: white;
+
+  border-color: #ffffff;
+
+  box-shadow: 3px 3px 0 #8b48c7;
+}
+
+/* ========================================
+   ÁREA DE IMPRESSÃO
+   ======================================== */
+
+.areaImpressao {
+  position: absolute;
+
+  border: 2px dashed rgba(255, 255, 255, 0.8);
+
+  background: rgba(255, 255, 255, 0.04);
+
+  pointer-events: none;
+}
+
+/* ========================================
+   IMAGEM DO UTILIZADOR
+   ======================================== */
+
+.imagemUtilizador {
+  position: absolute;
+
+  width: 25%;
+
+  cursor: grab;
+
+  touch-action: none;
+  user-select: none;
+
+  filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, 0.25));
+}
+
+.imagemUtilizador:active {
+  cursor: grabbing;
+}
+
+/* ========================================
+   GUARDAR
+   ======================================== */
+
+.guardarButton {
+  margin-top: 30px;
+
+  padding: 14px 28px;
+
+  border: 3px solid #ffffff;
+  border-radius: 14px;
+
+  background: linear-gradient(135deg, #ff4fc3, #a94dff);
+
+  color: white;
+
+  font-family: inherit;
+
+  font-size: 17px;
+  font-weight: 900;
+
+  text-shadow: 1px 1px 0 #8b2380;
+
+  box-shadow: 5px 5px 0 #7a35a8;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.1s,
+    box-shadow 0.1s;
+}
+
+.guardarButton:hover:not(:disabled) {
+  transform: translate(2px, 2px);
+
+  box-shadow: 2px 2px 0 #7a35a8;
+}
+
+.guardarButton:disabled {
+  opacity: 0.5;
+
+  cursor: not-allowed;
+}
+
+/* ========================================
+   DECORAÇÃO
+   ======================================== */
+
+.decoracao {
+  margin-top: 25px;
+
+  color: #d52ca8;
+
+  font-size: 18px;
+
+  letter-spacing: 8px;
+
+  opacity: 0.8;
+}
+
+/* ========================================
+   MOBILE
+   ======================================== */
+
+@media (max-width: 600px) {
+  .paginaPersonalizar {
+    padding: 20px 12px;
+  }
+
+  .cartaoRetro {
+    padding: 25px 15px 25px;
+
+    border-radius: 20px;
+
+    box-shadow: 5px 5px 0 #b05cff;
+  }
+
+  .containerImagem {
+    width: 90%;
+  }
+
+  .faceButtons {
+    gap: 8px;
+  }
+
+  .faceButton {
+    padding: 9px 15px;
+  }
+
+  .guardarButton {
+    width: 90%;
+  }
+}
